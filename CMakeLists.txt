@@ -4,6 +4,11 @@ project(SFML3_App LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# PATH helps at runtime for DLL lookup, but find_package() needs the CMake config path.
+if(WIN32)
+    list(APPEND CMAKE_PREFIX_PATH "C:/SFML-3.1.0")
+endif()
+
 # 1. Tell CMake to explicitly look for static SFML libraries
 set(SFML_STATIC_LIBRARIES ON)
 

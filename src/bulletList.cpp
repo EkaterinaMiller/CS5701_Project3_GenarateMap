@@ -1,6 +1,6 @@
 #include "bulletList.h"
 
-void BulletList::draw(sf::RenderTarget& target, sf::RenderStates states) const override
+void BulletList::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         target.draw(mTitle);
         for (const auto& item : mItems)
