@@ -19,11 +19,14 @@ set(SFML_APP_SOURCES
     src/bulletList.cpp
     src/button.cpp
     src/mapDisplay.cpp
+    src/display.cpp
+    src/minConflict.cpp
 )
 
 add_executable(sfml-app ${SFML_APP_SOURCES}
     src/display.cpp
-    include/helpers.h)
+    include/helpers.h
+    include/options.h)
 target_include_directories(sfml-app PRIVATE include)
 target_link_libraries(sfml-app PRIVATE SFML::Graphics SFML::Window SFML::System)
 

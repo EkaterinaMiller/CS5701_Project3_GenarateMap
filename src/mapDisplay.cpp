@@ -1,28 +1,21 @@
 #include "mapDisplay.h"
 #include <algorithm>
 
-MapDisplay::MapDisplay(sf::Vector2f position, sf::Vector2f size)
+MapDisplay::MapDisplay(sf::Vector2f position, sf::Vector2f size, const std::vector<std::vector<int>>& tileValues)
     : mPosition(position),
       mSize(size),
-      mPalette({
-          sf::Color::Blue,                 // 0
-          sf::Color::Yellow,               // 1
-          sf::Color(40, 170, 70),          // 2
-          sf::Color(20, 110, 20),          // 3
-          sf::Color(130, 130, 130),        // 4
-          sf::Color(220, 220, 220)         // 5
-      })
+      mTileValues(tileValues),
+      mPalette({ sf::Color::White})
 {
-    mStartBoard.setPosition(mPosition);
-    mStartBoard.setSize(mSize);
-    mStartBoard.setFillColor(sf::Color::Black);
-    mStartBoard.setOutlineThickness(1.f);
-    mStartBoard.setOutlineColor(sf::Color(90, 90, 90));
+    //mStartBoard.setPosition(mPosition);
+    //mStartBoard.setSize(mSize);
+    //mStartBoard.setFillColor(sf::Color::Black);
+    //mStartBoard.setOutlineThickness(1.f);
+    //mStartBoard.setOutlineColor(sf::Color(90, 90, 90));
 }
 
-void MapDisplay::setTiles(const std::vector<std::vector<int>>& tileValues)
+void MapDisplay::setTiles()
 {
-    mTileValues = tileValues;
     rebuildTiles();
 }
 
@@ -56,19 +49,19 @@ void MapDisplay::rebuildTiles()
     mTiles.clear();
     if (mTileValues.empty() || mTileValues.front().empty())
     {
-        return;
+        throw std::runtime_error("Tile values cannot be empty");
     }
 
     const std::size_t rows = mTileValues.size();
     std::size_t cols = 0;
+    //Sanety check. We expect col = row, but we want to be sure
     for (const auto& row : mTileValues)
     {
         cols = std::max(cols, row.size());
     }
-
     if (cols == 0)
     {
-        return;
+        throw std::runtime_error("Invalid tile dimensions");
     }
 
     const float tileWidth = mSize.x / static_cast<float>(cols);
@@ -90,15 +83,25 @@ void MapDisplay::rebuildTiles()
         }
     }
 }
+void MapDisplay::recolorTiles()
+{
+    for (std::size_t i = 0; i < mTiles.size(); ++i)
+    {
+        const std::size_t row = i / mTileValues.front().size();
+        const std::size_t col = i % mTileValues.front().size();
+        mTiles[i].setFillColor(colorForValue(mTileValues[row][col]));
+    }
+}
 
 void MapDisplay::update()
 {
     // Update logic for the map display can be added here if needed
+    recolorTiles();
 }
 
 void MapDisplay::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(mStartBoard, states);
+    //target.draw(mStartBoard, states);
     for (const auto& tile : mTiles)
     {
         target.draw(tile, states);

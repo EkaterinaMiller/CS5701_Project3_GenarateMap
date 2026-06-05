@@ -3,12 +3,15 @@
 #include "bulletList.h"
 #include "mapDisplay.h"
 #include "button.h"
+#include "minConflict.h"
+#include "options.h"
 enum class State
 {
     Waiting,
     Running
 };
-#include <SFML/Graphics.hpp>    
+#include <SFML/Graphics.hpp>  
+
 class Display
 {
 public:
@@ -27,10 +30,11 @@ private:
     BulletList mTerrainType;
     BulletList mMapSize;
     BulletList mDiagonals;
-    MapDisplay mMap;
     Button mGenarateMap;
     Button mRun;
     sf::Text mStatus;
+    std::vector<std::vector<int>> mCurrentMap;
+    MapDisplay mMap;
 
 };
 #endif
