@@ -38,6 +38,13 @@ void BulletList::handleInput(const sf::Event& e, sf::RenderWindow& window)
             {
                 if (mouseInItem){
                     item.setStatus(item.getStatus() == status::clicked ? status::normal : status::clicked );
+                    if (mOnlyOne && item.getStatus() == status::clicked) {
+                        for (auto& otherItem : mItems) {
+                            if (&otherItem != &item) {
+                                otherItem.setStatus(status::normal);
+                            }
+                        }
+                    }
                 }
             }
         }

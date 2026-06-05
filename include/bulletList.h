@@ -41,14 +41,18 @@ class BulletList: public sf::Drawable
         sf::Vector2f mPosition;
         status mStatus;
     };
-    BulletList(sf::Vector2f position, const sf::Font& font, const std::string& title, const std::vector<std::string>& items)
-        : mTitle(font, title, 30), mPosition(position)
+    BulletList(sf::Vector2f position, const sf::Font& font, const std::string& title, const std::vector<std::string>& items, bool onlyOne = true)
+        : mTitle(font, title, 30), mPosition(position), mOnlyOne(onlyOne)
     {
         mTitle.setFillColor(sf::Color::White);
         mTitle.setPosition({mPosition.x + 50, mPosition.y + 20});
         for (size_t i = 0; i < items.size(); ++i)
         {
             mItems.emplace_back(font, items[i], sf::Vector2f(mPosition.x + 50, mPosition.y + 70 + i * 40));
+        }
+        //set first to active
+        if (!mItems.empty()) {
+            mItems[0].setStatus(status::clicked);
         }
     }
     std::vector<std::string> getItems() const;
@@ -59,6 +63,7 @@ private:
     sf::Text mTitle;
     std::vector<Item> mItems;
     sf::Vector2f mPosition{0, 0};
+    bool mOnlyOne{true}; // If true, only one item can be active at a time
 
 };
 #endif

@@ -26,6 +26,7 @@ private:
     State mState;
     BulletList mTerrainType;
     BulletList mMapSize;
+    BulletList mDiagonals;
     MapDisplay mMap;
     Button mGenarateMap;
     Button mRun;

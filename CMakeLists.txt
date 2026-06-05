@@ -22,7 +22,8 @@ set(SFML_APP_SOURCES
 )
 
 add_executable(sfml-app ${SFML_APP_SOURCES}
-    src/display.cpp)
+    src/display.cpp
+    include/helpers.h)
 target_include_directories(sfml-app PRIVATE include)
 target_link_libraries(sfml-app PRIVATE SFML::Graphics SFML::Window SFML::System)
 
