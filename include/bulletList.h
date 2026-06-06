@@ -5,7 +5,8 @@
 #include <SFML/Graphics.hpp>
 const sf::Color ACTIVE_COLOR = sf::Color::Red;
 const sf::Color INACTIVE_COLOR = sf::Color::White;
-const sf::Color HOVER_COLOR = sf::Color::Yellow;
+const sf::Color ACTIVE_COLOR_GREYED = sf::Color(82, 69, 69);
+const sf::Color INACTIVE_COLOR_GREYED = sf::Color(196, 194, 194);
 class BulletList: public sf::Drawable
 {
     public:
@@ -17,7 +18,7 @@ class BulletList: public sf::Drawable
             : mBullet(5), mText(font, text, 20), mPosition(position), mStatus(status::normal)
         {
             mBullet.setFillColor(INACTIVE_COLOR);
-            mText.setFillColor(sf::Color::White);
+            mText.setFillColor(INACTIVE_COLOR);
             mBullet.setPosition(mPosition);
             mText.setPosition({mPosition.x + 15, mPosition.y - 10});
         }
@@ -44,7 +45,7 @@ class BulletList: public sf::Drawable
     BulletList(sf::Vector2f position, const sf::Font& font, const std::string& title, const std::vector<std::string>& items, bool onlyOne = true, bool greyOut = false)
         : mTitle(font, title, 30), mPosition(position), mOnlyOne(onlyOne), mGreyOut(greyOut)
     {
-        mTitle.setFillColor(sf::Color::White);
+        mTitle.setFillColor(INACTIVE_COLOR);
         mTitle.setPosition({mPosition.x + 50, mPosition.y + 20});
         for (size_t i = 0; i < items.size(); ++i)
         {
@@ -53,6 +54,8 @@ class BulletList: public sf::Drawable
     }
     std::vector<std::string> getItems() const;
     void selectItems(int index);
+    void grayOutList(){mGreyOut = true;}
+    void makeActive(){mGreyOut = false;}
     void handleInput(const sf::Event& e, sf::RenderWindow& window);
     void update();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

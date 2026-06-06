@@ -3,9 +3,8 @@
 #include <iostream>
 int main()
 {
-    auto window = sf::RenderWindow(sf::VideoMode({1200, 800}), "SFML 3.1 works!");
-    window.setFramerateLimit(60);
-    //window.setPosition({50,50});
+    auto window = sf::RenderWindow(sf::VideoMode({1200, 800}), "Genarate map with no conflicts!");
+    //window.setFramerateLimit(60);
     sf::Font font;
     if (!font.openFromFile("VCR_OSD_MONO_1.001.ttf"))
     {

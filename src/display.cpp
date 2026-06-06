@@ -93,11 +93,14 @@ void Display::handleInput(sf::RenderWindow& window)
                     mStatus.setString("Status: Running...\nWith Animation: " + 
                         vectorToString(mAnimation.getItems()));
                     mStartTime.restart();
+                    mTerrainType.grayOutList();
+                    mMapSize.grayOutList();
+                    mDiagonals.grayOutList();
                     mState = State::Running;
                 }
             }
         }else if (mState == State::Running) {
-
+            mAnimation.handleInput(*event, window);
         }
     }
 }
@@ -119,37 +122,61 @@ void Display::update(sf::RenderWindow& window)
         numStuckIterations = 0;
         numOfIterations = 0;
     }else if (mState == State::Running) {
+        mMapSize.update();
+        mTerrainType.update();
+        mDiagonals.update();
+        mAnimation.update();
+        mRun.update();
         std::vector<std::string> terrainTypes = mTerrainType.getItems();
         std::vector<std::string> diagonalOptions = mDiagonals.getItems();
         int minValue = 1;
         int maxValue = terrainTypes.size();
 
-        int numConflicts = resolveConflictOnePass(mCurrentMap, minValue, maxValue, diagonalOptions[0] == "On");
-        numOfIterations++;
-        if (numConflicts < minConflicts) {
-            minConflicts = numConflicts;
-            numStuckIterations = 0;
-            // Rebuild from current map data so visual updates stay in sync with algorithm steps.
-            if (mAnimation.getItems()[0] == "On") {
-                mMap.recolorTiles();
-                //numConflicts = countTotalConflicts(mCurrentMap, diagonalOptions[0] == "On");
-                mStatus.setString("Status: Running...\nTotal Conflicts: " + std::to_string(numConflicts)
-                    + "\nIterations: " + std::to_string(numOfIterations) );
+        const bool animationOn = mAnimation.getItems()[0] == "On";
+        const int passesPerFrame = animationOn ? 1 : 200;
+        int lastNumConflicts = minConflicts;
+
+        for (int pass = 0; pass < passesPerFrame && mState == State::Running; ++pass) {
+            int numConflicts = resolveConflictOnePass(mCurrentMap, minValue, maxValue, diagonalOptions[0] == "On");
+            lastNumConflicts = numConflicts;
+            numOfIterations++;
+
+            if (numConflicts < minConflicts) {
+                minConflicts = numConflicts;
+                numStuckIterations = 0;
+
+                if (animationOn) {
+                    mMap.recolorTiles();
+                    mStatus.setString("Status: Running...\nTotal Conflicts: " + std::to_string(numConflicts)
+                        + "\nIterations: " + std::to_string(numOfIterations) );
+                }
+
+                if (numConflicts == 0) {
+                    mMap.recolorTiles();
+                    sf::Time elapsed = mStartTime.getElapsedTime();
+                    mStatus.setString("Status: Finished!\nTotal Conflicts: " + std::to_string(numConflicts)
+                        + "\nElapsed Time: " + std::to_string(elapsed.asSeconds()) + " seconds Iterations: " + std::to_string(numOfIterations));
+                    mState = State::Waiting;
+                    mTerrainType.makeActive();
+                    mMapSize.makeActive();
+                    mDiagonals.makeActive();
+                }
+            }else {
+                numStuckIterations++;
+                if (numStuckIterations > 300) {
+                    mMap.recolorTiles();
+                    mStatus.setString("Status: Stuck at " + std::to_string(numConflicts) + " conflicts\nYou may genarate new map.");
+                    mState = State::Waiting;
+                    mTerrainType.makeActive();
+                    mMapSize.makeActive();
+                    mDiagonals.makeActive();
+                }
             }
-    
-            // Stop only when solved; otherwise keep running more passes.
-            if (numConflicts == 0) {
-                sf::Time elapsed = mStartTime.getElapsedTime();
-                mStatus.setString("Status: Finished!\nTotal Conflicts: " + std::to_string(numConflicts) 
-                    + "\nElapsed Time: " + std::to_string(elapsed.asSeconds()) + " seconds Iterations: " + std::to_string(numOfIterations));
-                mState = State::Waiting;
-            }
-        }else {
-            numStuckIterations++;
-            if (numStuckIterations > 300) {
-                mStatus.setString("Status: Stuck at " + std::to_string(numConflicts) + " conflicts\nYou may genarate new map.");
-                mState = State::Waiting;
-            }
+        }
+
+        if (!animationOn && mState == State::Running) {
+            mStatus.setString("Status: Running...\nTotal Conflicts: " + std::to_string(lastNumConflicts)
+                + "\nIterations: " + std::to_string(numOfIterations));
         }
     }
 }

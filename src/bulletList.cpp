@@ -27,21 +27,23 @@ std::vector<std::string> BulletList::getItems() const
 }
 void BulletList::handleInput(const sf::Event& e, sf::RenderWindow& window)
 {
-    const sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
-    const sf::Vector2f mousePosition = window.mapPixelToCoords(mousePixelPos);
-    for (auto& item : mItems)
-    {
-        const bool mouseInItem = item.getGlobalBounds().contains(mousePosition);
-        if (const auto* mousePressed = e.getIf<sf::Event::MouseButtonPressed>())
+    if (!mGreyOut){
+        const sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
+        const sf::Vector2f mousePosition = window.mapPixelToCoords(mousePixelPos);
+        for (auto& item : mItems)
         {
-            if (mousePressed->button == sf::Mouse::Button::Left)
+            const bool mouseInItem = item.getGlobalBounds().contains(mousePosition);
+            if (const auto* mousePressed = e.getIf<sf::Event::MouseButtonPressed>())
             {
-                if (mouseInItem){
-                    item.setStatus(item.getStatus() == status::clicked ? status::normal : status::clicked );
-                    if (mOnlyOne && item.getStatus() == status::clicked) {
-                        for (auto& otherItem : mItems) {
-                            if (&otherItem != &item) {
-                                otherItem.setStatus(status::normal);
+                if (mousePressed->button == sf::Mouse::Button::Left)
+                {
+                    if (mouseInItem){
+                        item.setStatus(item.getStatus() == status::clicked ? status::normal : status::clicked );
+                        if (mOnlyOne && item.getStatus() == status::clicked) {
+                            for (auto& otherItem : mItems) {
+                                if (&otherItem != &item) {
+                                    otherItem.setStatus(status::normal);
+                                }
                             }
                         }
                     }
@@ -53,16 +55,31 @@ void BulletList::handleInput(const sf::Event& e, sf::RenderWindow& window)
 
 void BulletList::update()
 {
-    for (auto& item : mItems)
-    {
-        switch (item.getStatus())
+    if (mGreyOut){
+        for (auto& item : mItems)
         {
-        case status::normal:
-            item.setColor(INACTIVE_COLOR, INACTIVE_COLOR);
-            break;
-        case status::clicked:
-            item.setColor(ACTIVE_COLOR, INACTIVE_COLOR);
-            break;
+            switch (item.getStatus())
+            {
+            case status::normal:
+                item.setColor(INACTIVE_COLOR_GREYED, INACTIVE_COLOR_GREYED);
+                break;
+            case status::clicked:
+                item.setColor(ACTIVE_COLOR_GREYED, INACTIVE_COLOR_GREYED);
+                break;
+            }
+        }
+    }else {
+        for (auto& item : mItems)
+        {
+            switch (item.getStatus())
+            {
+            case status::normal:
+                item.setColor(INACTIVE_COLOR, INACTIVE_COLOR);
+                break;
+            case status::clicked:
+                item.setColor(ACTIVE_COLOR, INACTIVE_COLOR);
+                break;
+            }
         }
     }
 }
