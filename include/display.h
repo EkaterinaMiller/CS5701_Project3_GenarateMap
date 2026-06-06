@@ -35,6 +35,7 @@ private:
     sf::Text mStatus;
     std::vector<std::vector<int>> mCurrentMap;
     MapDisplay mMap;
+    sf::Clock mStartTime;
 
 };
 #endif

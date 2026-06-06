@@ -76,6 +76,7 @@ void Display::handleInput(sf::RenderWindow& window)
                 }else {
                     mStatus.setString("Status: Running...\nWith Diagonals: " + 
                         vectorToString(mDiagonals.getItems()));
+                    mStartTime.restart();
                     mState = State::Running;
                 }
             }
@@ -86,6 +87,9 @@ void Display::handleInput(sf::RenderWindow& window)
 }
 void Display::update(sf::RenderWindow& window)
 {
+    static int minConflicts = std::numeric_limits<int>::max();
+    static int numStuckIterations = 0;
+    static int numOfIterations = 0;
     // Implementation for updating the display
     if (mState == State::Waiting) {
         mMapSize.update();//bullet list have their own update function to handle the color change when clicked
@@ -94,49 +98,39 @@ void Display::update(sf::RenderWindow& window)
         mGenarateMap.update();//button have their own update function to handle the color change when clicked
         mRun.update();//button have their own update function to handle the color change when clicked
         mMap.update();
+        minConflicts = std::numeric_limits<int>::max();
+        numStuckIterations = 0;
+        numOfIterations = 0;
     }else if (mState == State::Running) {
         std::vector<std::string> terrainTypes = mTerrainType.getItems();
         std::vector<std::string> diagonalOptions = mDiagonals.getItems();
         int minValue = 1;
         int maxValue = terrainTypes.size();
 
-        // Apply at most one improving tile update per frame so progress is visible.
-        // bool diagonal = diagonalOptions[0] == "On";
-        // bool changed = false;
-        // for (std::size_t x = 0; x < mCurrentMap.size() && !changed; ++x) {
-        //     for (std::size_t y = 0; y < mCurrentMap[x].size(); ++y) {
-        //         if (countConflicts(mCurrentMap, static_cast<int>(x), static_cast<int>(y), mCurrentMap[x][y], diagonal) > 0) {
-        //             changed = lowerConflictValue(mCurrentMap, static_cast<int>(x), static_cast<int>(y), minValue, maxValue, diagonal);
-        //             if (changed) {
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
-
-        // // If one full pass cannot improve, perturb one conflicting cell to escape local minima.
-        // if (!changed) {
-        //     for (std::size_t x = 0; x < mCurrentMap.size() && !changed; ++x) {
-        //         for (std::size_t y = 0; y < mCurrentMap[x].size(); ++y) {
-        //             if (countConflicts(mCurrentMap, static_cast<int>(x), static_cast<int>(y), mCurrentMap[x][y], diagonal) > 0) {
-        //                 mCurrentMap[x][y] = minValue + rand() % (maxValue - minValue + 1);
-        //                 changed = true;
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
         int numConflicts = resolveConflictOnePass(mCurrentMap, minValue, maxValue, diagonalOptions[0] == "On");
-
-        // Rebuild from current map data so visual updates stay in sync with algorithm steps.
-        mMap.setTiles();
-        //int numConflicts = countTotalConflicts(mCurrentMap, diagonalOptions[0] == "On");
-        mStatus.setString("Status: Running...\nWith Diagonals: " + vectorToString(diagonalOptions) + "\nTotal Conflicts: " + std::to_string(numConflicts));
-
-        // Stop only when solved; otherwise keep running more passes.
-        if (numConflicts == 0) {
-            mStatus.setString("Status: Finished!\n\nTotal Conflicts: " + std::to_string(numConflicts));
-            mState = State::Waiting;
+        numOfIterations++;
+        if (numConflicts < minConflicts) {
+            minConflicts = numConflicts;
+            numStuckIterations = 0;
+            // Rebuild from current map data so visual updates stay in sync with algorithm steps.
+            mMap.setTiles();
+            //numConflicts = countTotalConflicts(mCurrentMap, diagonalOptions[0] == "On");
+            mStatus.setString("Status: Running...\nTotal Conflicts: " + std::to_string(numConflicts)
+                + "\nIterations: " + std::to_string(numOfIterations) );
+    
+            // Stop only when solved; otherwise keep running more passes.
+            if (numConflicts == 0) {
+                sf::Time elapsed = mStartTime.getElapsedTime();
+                mStatus.setString("Status: Finished!\nTotal Conflicts: " + std::to_string(numConflicts) 
+                    + "\nElapsed Time: " + std::to_string(elapsed.asSeconds()) + " seconds Iterations: " + std::to_string(numOfIterations));
+                mState = State::Waiting;
+            }
+        }else {
+            numStuckIterations++;
+            if (numStuckIterations > 300) {
+                mStatus.setString("Status: Stuck at " + std::to_string(numConflicts) + " conflicts\nYou may genarate new map.");
+                mState = State::Waiting;
+            }
         }
     }
 }
