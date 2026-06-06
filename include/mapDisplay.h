@@ -8,15 +8,15 @@ class MapDisplay:public sf::Drawable
 { 
 public:
     MapDisplay(sf::Vector2f position, sf::Vector2f size, const std::vector<std::vector<int>>& tileValues);
-    void setTiles();
+    //void setTiles(); same as rebuild.
     void setPalette(const std::vector<sf::Color>& palette);
+    void rebuildTiles();
+    void recolorTiles();
     void update();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     ~MapDisplay(){};
 
 private:
-    void rebuildTiles();
-    void recolorTiles();
     sf::Color colorForValue(int value) const;
 
     //sf::RectangleShape mStartBoard;

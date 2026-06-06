@@ -7,4 +7,5 @@ int countConflicts(const std::vector<std::vector<int>>& map, int x, int y, int n
 bool lowerConflictValue(std::vector<std::vector<int>>& map, int x, int y, int minValue, int maxValue, bool diagonal = false);
 int countTotalConflicts(const std::vector<std::vector<int>>& map, bool diagonal = false);
 int resolveConflictOnePass(std::vector<std::vector<int>>& map, int minValue, int maxValue, bool diagonal = false);
+void makeNeighborValuesSame(std::vector<std::vector<int>>& map, int x, int y, bool diagonal = false);
 #endif

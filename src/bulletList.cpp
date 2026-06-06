@@ -66,3 +66,12 @@ void BulletList::update()
         }
     }
 }
+void BulletList::selectItems(int index)
+{
+    if (index < 0 || index >= static_cast<int>(mItems.size())) {
+        throw std::out_of_range("Index out of range");
+    }
+
+    mItems[index].setStatus(status::clicked);
+
+}

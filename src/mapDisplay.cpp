@@ -14,10 +14,10 @@ MapDisplay::MapDisplay(sf::Vector2f position, sf::Vector2f size, const std::vect
     //mStartBoard.setOutlineColor(sf::Color(90, 90, 90));
 }
 
-void MapDisplay::setTiles()
-{
-    rebuildTiles();
-}
+// void MapDisplay::setTiles()
+// {
+//     rebuildTiles();
+// }
 
 void MapDisplay::setPalette(const std::vector<sf::Color>& palette)
 {

@@ -1,6 +1,7 @@
 #include "minConflict.h"
 #include <cstdlib>
 #include <utility>
+#include <iostream>
 
 std::vector<std::vector<int>> generateMap(int minValue, int maxValue, int size)
 {
@@ -96,6 +97,7 @@ int resolveConflictOnePass(std::vector<std::vector<int>>& map, int minValue, int
             totalConflicts += conflicts;
 
             if (conflicts > maxConflicts) {
+                //we found a new maximum, remove cels for the old one and add this one.
                 maxConflicts = conflicts;
                 worstCells.clear();
                 worstCells.push_back({static_cast<int>(x), static_cast<int>(y)});
@@ -109,16 +111,34 @@ int resolveConflictOnePass(std::vector<std::vector<int>>& map, int minValue, int
         return totalConflicts; // No conflicts to resolve
     }
 
-    // Try to improve one worst cell only, then return so the GUI can render.
+    // Go throught the worst cells and try to lower their conflict count for every cell
+    //untill we find one that can be improved. If we find one, we return immediately to start a new pass with the updated map.
     for (const auto& [x, y] : worstCells) {
         if (lowerConflictValue(map, x, y, minValue, maxValue, diagonal)) {
             return totalConflicts;
         }
     }
-
+std::cout << "Stuck at " << maxConflicts << " conflicts, trying to perturb the map..." << std::endl;
     // If none of the worst cells can be improved, perturb one of them to escape the local minimum.
     const std::size_t randomIndex = static_cast<std::size_t>(rand()) % worstCells.size();
     const auto& [x, y] = worstCells[randomIndex];
-    map[x][y] = minValue + rand() % (maxValue - minValue + 1);
+    map[x][y] = minValue + rand() % (maxValue - minValue + 1);//does not work on diagonals if numTerains >5
+    //change its neighbors to the cell value
+    makeNeighborValuesSame(map, x, y, diagonal);//did not work along. Worsth then just changing the cell value. 
+    //but in combination with setting one "bad" cel to the random values, it seems to help escape the local minimum.
     return totalConflicts;
+}
+void makeNeighborValuesSame(std::vector<std::vector<int>>& map, int x, int y, bool diagonal)
+{
+    int cellValue = map[x][y];
+    if (x > 0) map[x - 1][y] = cellValue;
+    if (x < map.size() - 1) map[x + 1][y] = cellValue;
+    if (y > 0) map[x][y - 1] = cellValue;
+    if (y < map[x].size() - 1) map[x][y + 1] = cellValue;
+    if (diagonal) {
+        if (x > 0 && y > 0) map[x - 1][y - 1] = cellValue;
+        if (x > 0 && y < map[x].size() - 1) map[x - 1][y + 1] = cellValue;
+        if (x < map.size() - 1 && y > 0) map[x + 1][y - 1] = cellValue;
+        if (x < map.size() - 1 && y < map[x].size() - 1) map[x + 1][y + 1] = cellValue;
+    }
 }

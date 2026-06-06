@@ -41,8 +41,8 @@ class BulletList: public sf::Drawable
         sf::Vector2f mPosition;
         status mStatus;
     };
-    BulletList(sf::Vector2f position, const sf::Font& font, const std::string& title, const std::vector<std::string>& items, bool onlyOne = true)
-        : mTitle(font, title, 30), mPosition(position), mOnlyOne(onlyOne)
+    BulletList(sf::Vector2f position, const sf::Font& font, const std::string& title, const std::vector<std::string>& items, bool onlyOne = true, bool greyOut = false)
+        : mTitle(font, title, 30), mPosition(position), mOnlyOne(onlyOne), mGreyOut(greyOut)
     {
         mTitle.setFillColor(sf::Color::White);
         mTitle.setPosition({mPosition.x + 50, mPosition.y + 20});
@@ -50,12 +50,9 @@ class BulletList: public sf::Drawable
         {
             mItems.emplace_back(font, items[i], sf::Vector2f(mPosition.x + 50, mPosition.y + 70 + i * 40));
         }
-        //set first to active
-        if (!mItems.empty()) {
-            mItems[0].setStatus(status::clicked);
-        }
     }
     std::vector<std::string> getItems() const;
+    void selectItems(int index);
     void handleInput(const sf::Event& e, sf::RenderWindow& window);
     void update();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -64,6 +61,7 @@ private:
     std::vector<Item> mItems;
     sf::Vector2f mPosition{0, 0};
     bool mOnlyOne{true}; // If true, only one item can be active at a time
+    bool mGreyOut{false}; // If true, inactive items are greyed out
 
 };
 #endif

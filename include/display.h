@@ -30,6 +30,7 @@ private:
     BulletList mTerrainType;
     BulletList mMapSize;
     BulletList mDiagonals;
+    BulletList mAnimation;
     Button mGenarateMap;
     Button mRun;
     sf::Text mStatus;
