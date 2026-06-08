@@ -1,7 +1,7 @@
 # CS5701 Project 3 - Generate Map
 
 This project is an interactive terrain map generator built with C++ and SFML 3.1.
-It creates a square map with user-selected size and terrain types, then improves the map using a min-conflicts style local search algorithm.
+It creates a square map with a user-selected size and terrain types, then improves the map using a min-conflicts style local search algorithm.
 
 ## Features
 
@@ -38,12 +38,12 @@ Install the following before building:
 
 ## Environment Setup and Build
 
-### Windows (tested on Windows 11, 64 bits)
+### Windows (tested on Windows 11, 64-bit)
 
 1. Install tools:
 	 - VS Code: Download from https://code.visualstudio.com/Download
 	 - CMake: Download installer from https://cmake.org/download/ 
-	 - SFML 3.1.0 (or compatible SFML 3 release) Download SFML and coresponding compiler from https://www.sfml-dev.org/download/sfml/3.1.0/. Unzip and move SFML-3.1.0 and mingw64 (in my case) to the `C:`
+	 - SFML 3.1.0 (or compatible SFML 3 release): Download SFML and corresponding compiler from https://www.sfml-dev.org/download/sfml/3.1.0/. Unzip and move SFML-3.1.0 and mingw64 (in my case) to the `C:`
 2. Ensure CMake can find SFML:
 	 - Option A: install SFML to `C:/SFML-3.1.0` (matches current `CMakeLists.txt` default on Windows)
 	 - Option B: pass one of these while configuring:
@@ -64,10 +64,10 @@ cd build
 ```
 
 Notes:
-- If you see `cannot open output file sfml-app.exe: Permission denied`, close any running `mapGenarator.exe` and rebuild. 
+- If you see `cannot open output file `mapGenerator.exe`: Permission denied`, close any running `mapGenerator.exe` and rebuild. 
 
 ### Linux (tested on WSL)
-You cannot install SFML 3 using apt because Ubuntu’s official package repositories still only offer older versions (usually SFML 2.x). One of the way to instal SFML 3 on Ubunty is build from source.
+You cannot install SFML 3 using apt because Ubuntu’s official package repositories still only offer older versions (usually SFML 2.x). One of the way to instal SFML 3 on Ubuntu is to build from source.
 1. Install dependencies (Ubuntu/Debian example):
 
 ```bash
@@ -88,19 +88,19 @@ cd SFML
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-> Note: If you got error about not meating CMake minimu requirements. You need update CMake to the newer vertion. Unfotunalty, `apt` can't do it for the same reason it can't do SFML 3. You can do it with Snap manager.
-3.1 Remove curent CMake and instal a newer vertion with snap:
+> Note: If you get an error about not meeting CMake minimum requirements. You need to update CMake to the newer version. Unfortunately, `apt` can't do it for the same reason it can't do SFML 3. You can do it with Snap manager.
+3.1 Remove current CMake and install a newer version with snap:
 ```bash
 sudo apt purge --auto-remove cmake
 sudo snap install cmake --classic
 ````
-3.2 Rerun cmake comand from step 3. If you get "No such file or derectory" error, you need clear local history
+3.2 Rerun cmake command from step 3. If you get a "No such file or directory" error, you need to clear local history
 ```bash
 hash -r
 rm -rf CMakeCache.txt CMakeFiles
 ````
-Re-run `cmake` command from step 3 again
-> Note: If you get an error, Google the error, install required dependencies, then clear cmake cach and re-run command
+Re-run the `cmake` command from step 3 again
+> Note: If you get an error, Google the error, install required dependencies, then clear the cmake cache and re-run the command
 
 4. Compile the codebase and install the generated binaries to your system
 ```bash
@@ -111,7 +111,7 @@ sudo cmake --install .
 ```bash
 sudo ldconfig
 ````
-6. Clone the progect repository and go to the project directory
+6. Clone the project repository and go to the project directory
 ```bash
 git clone https://github.com/EkaterinaMiller/CS5701_Project3_GenerateMap.git GenerateMap
 cd GenerateMap
@@ -124,14 +124,14 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ```
 
-8. Change to the build directoru and run:
+8. Change to the build directory and run:
 
 ```bash
 cd build
 ./mapGenerator
 ```
 
-> Note (AI genarated, not tested): If CMake cannot find SFML, configure with:
+> Note (AI generated, not tested): If CMake cannot find SFML, configure with:
 
 ```bash
 cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/SFML
@@ -144,7 +144,7 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/SFML
 ```bash
 brew install cmake sfml
 ````
-2. Clone the progect repository and go to the project directory
+2. Clone the project repository and go to the project directory
 ```bash
 git clone https://github.com/EkaterinaMiller/CS5701_Project3_GenerateMap.git GenerateMap
 cd GenerateMap
@@ -156,7 +156,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ```
 
-4. Change to the build directoru and run:
+4. Change to the build directory and run:
 
 ```bash
 cd build
@@ -176,7 +176,7 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH=/opt/homebrew
 3. Click `Generate Map` to create an initial map.
 4. Choose diagonal and animation options.
 5. Click `Run` to start conflict reduction.
-6. Watch status text for conflict counts, iterations, and completion/stuck state.
+6. Watch the status text for conflict counts, iterations, and completion/stuck state.
 
 ## Algorithm Summary
 
