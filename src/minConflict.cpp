@@ -118,7 +118,7 @@ int resolveConflictOnePass(std::vector<std::vector<int>>& map, int minValue, int
             return totalConflicts;
         }
     }
-std::cout << "Stuck at " << maxConflicts << " conflicts, trying to perturb the map..." << std::endl;
+//std::cout << "Stuck at " << maxConflicts << " conflicts, trying to perturb the map..." << std::endl;
     // If none of the worst cells can be improved, perturb one of them to escape the local minimum.
     const std::size_t randomIndex = static_cast<std::size_t>(rand()) % worstCells.size();
     const auto& [x, y] = worstCells[randomIndex];
